@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memory Card Game - Mini Project</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .game-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            max-width: 800px;
+            width: 100%;
+        }
+        
+        .game-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .game-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #4a5568;
+            margin-bottom: 10px;
+        }
+        
+        .game-subtitle {
+            font-size: 1.1rem;
+            color: #718096;
+            margin-bottom: 20px;
+        }
+        
+        .game-stats {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f7fafc;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+        }
+        
+        .stat-box {
+            text-align: center;
+            padding: 10px 20px;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: #718096;
+            margin-bottom: 5px;
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #4a5568;
+        }
+        
+        .game-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .card {
+            aspect-ratio: 1;
+            perspective: 1000px;
+            cursor: pointer;
+        }
+        
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+        
+        .card.flipped .card-inner {
+            transform: rotateY(180deg);
+        }
+        
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2rem;
+            font-weight: 600;
+        }
+        
+        .card-front {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            transform: rotateY(180deg);
+        }
+        
+        .card-back {
+            background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e0 100%);
+            border: 3px solid #e2e8f0;
+        }
+        
+        .game-controls {
+            text-align: center;
+        }
+        
+        .start-btn, .restart-btn {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(72, 187, 120, 0.3);
+        }
+        
+        .start-btn:hover, .restart-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(72, 187, 120, 0.4);
+        }
+        
+        .win-message {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .win-message.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .win-content {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+        
+        .win-message.show .win-content {
+            transform: scale(1);
+        }
+        
+        .win-title {
+            font-size: 2rem;
+            color: #48bb78;
+            margin-bottom: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .game-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 10px;
+            }
+            
+            .game-title {
+                font-size: 2rem;
+            }
+            
+            .stat-value {
+                font-size: 1.2rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .game-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .game-stats {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .game-title {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="game-header">
+            <h1 class="game-title">Memory Match Game</h1>
+            <p class="game-subtitle">Match pairs of cards to win! Test your memory skills.</p>
+        </div>
+        
+        <div class="game-stats">
+            <div class="stat-box">
+                <div class="stat-label">Time</div>
+                <div class="stat-value" id="timer">00:00</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Moves</div>
+                <div class="stat-value" id="moves">0</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Pairs</div>
+                <div class="stat-value" id="pairs">0/8</div>
+            </div>
+        </div>
+        
+        <div class="game-grid" id="game-grid">
+            <!-- Cards will be generated here -->
+        </div>
+        
+        <div class="game-controls">
+            <button class="start-btn" id="start-btn">Start Game</button>
+        </div>
+    </div>
+    
+    <div class="win-message" id="win-message">
+        <div class="win-content">
+            <h2 class="win-title">Congratulations! 🎉</h2>
+            <p>You've completed the game!</p>
+            <p>Time: <span id="final-time">00:00</span></p>
+            <p>Moves: <span id="final-moves">0</span></p>
+            <button class="restart-btn" id="restart-btn">Play Again</button>
+        </div>
+    </div>
+
+    <script>
+        const symbols = ['🌟', '🚀', '🎯', '🎨', '🎭', '🎪', '🎮', '🏆'];
+        let cards = [];
+        let flippedCards = [];
+        let matchedPairs = 0;
+        let totalPairs = 8;
+        let moves = 0;
+        let timer = 0;
+        let timerInterval;
+        let gameStarted = false;
+
+        const gameGrid = document.getElementById('game-grid');
+        const timerEl = document.getElementById('timer');
+        const movesEl = document.getElementById('moves');
+        const pairsEl = document.getElementById('pairs');
+        const startBtn = document.getElementById('start-btn');
+        const winMessage = document.getElementById('win-message');
+        const finalTime = document.getElementById('final-time');
+        const finalMoves = document.getElementById('final-moves');
+        const restartBtn = document.getElementById('restart-btn');
+
+        function initializeGame() {
+            // Create card pairs
+            cards = [];
+            symbols.forEach(symbol => {
+                cards.push(symbol);
+                cards.push(symbol);
+            });
+            
+            // Shuffle cards
+            cards = cards.sort(() => Math.random() - 0.5);
+            
+            // Clear game grid
+            gameGrid.innerHTML = '';
+            
+            // Create cards
+            cards.forEach((symbol, index) => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `
+                    <div class="card-inner">
+                        <div class="card-front">${symbol}</div>
+                        <div class="card-back"></div>
+                    </div>
+                `;
+                card.addEventListener('click', () => flipCard(card, symbol));
+                gameGrid.appendChild(card);
+            });
+            
+            // Reset game state
+            flippedCards = [];
+            matchedPairs = 0;
+            moves = 0;
+            timer = 0;
+            gameStarted = false;
+            
+            // Update UI
+            movesEl.textContent = '0';
+            pairsEl.textContent = '0/8';
+            timerEl.textContent = '00:00';
+            startBtn.textContent = 'Start Game';
+        }
+
+        function startGame() {
+            if (!gameStarted) {
+                gameStarted = true;
+                startBtn.textContent = 'Game Running...';
+                startBtn.disabled = true;
+                
+                // Start timer
+                timerInterval = setInterval(() => {
+                    timer++;
+                    const minutes = Math.floor(timer / 60).toString().padStart(2, '0');
+                    const seconds = (timer % 60).toString().padStart(2, '0');
+                    timerEl.textContent = `${minutes}:${seconds}`;
+                }, 1000);
+            }
+        }
+
+        function flipCard(card, symbol) {
+            if (!gameStarted) {
+                startGame();
+            }
+            
+            if (flippedCards.length < 2 && !card.classList.contains('flipped') && !card.classList.contains('matched')) {
+                card.classList.add('flipped');
+                flippedCards.push({ card, symbol });
+                
+                if (flippedCards.length === 2) {
+                    moves++;
+                    movesEl.textContent = moves;
+                    
+                    setTimeout(checkMatch, 500);
+                }
+            }
+        }
+
+        function checkMatch() {
+            const [card1, card2] = flippedCards;
+            
+            if (card1.symbol === card2.symbol) {
+                // Match found
+                card1.card.classList.add('matched');
+                card2.card.classList.add('matched');
+                matchedPairs++;
+                pairsEl.textContent = `${matchedPairs}/${totalPairs}`;
+                
+                if (matchedPairs === totalPairs) {
+                    endGame();
+                }
+            } else {
+                // No match
+                card1.card.classList.remove('flipped');
+                card2.card.classList.remove('flipped');
+            }
+            
+            flippedCards = [];
+        }
+
+        function endGame() {
+            clearInterval(timerInterval);
+            
+            // Update final stats
+            const minutes = Math.floor(timer / 60).toString().padStart(2, '0');
+            const seconds = (timer % 60).toString().padStart(2, '0');
+            finalTime.textContent = `${minutes}:${seconds}`;
+            finalMoves.textContent = moves;
+            
+            // Show win message
+            setTimeout(() => {
+                winMessage.classList.add('show');
+            }, 1000);
+        }
+
+        function restartGame() {
+            winMessage.classList.remove('show');
+            clearInterval(timerInterval);
+            initializeGame();
+            startBtn.disabled = false;
+        }
+
+        // Event listeners
+        startBtn.addEventListener('click', startGame);
+        restartBtn.addEventListener('click', restartGame);
+
+        // Initialize game
+        initializeGame();
+    </script>
+</body>
+</html>
