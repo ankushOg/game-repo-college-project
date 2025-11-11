@@ -1,0 +1,1117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aligarh Bites - Authentic Mughlai Cuisine</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Font - Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #111827; /* bg-gray-900 */
+            color: #d1d5db; /* text-gray-300 */
+        }
+        h1, h2, h3, h4, .font-display {
+            font-family: 'Playfair Display', serif;
+            color: #f9fafb; /* text-gray-50 */
+        }
+        /* Hide scrollbar for Chrome, Safari and Opera */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        /* Hide scrollbar for IE, Edge and Firefox */
+        .no-scrollbar {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+
+        /* --- Animations --- */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        /* Modal transitions (Dark Mode) */
+        .modal-base {
+            transition: opacity 0.3s ease-out, visibility 0.s 0.3s;
+            opacity: 0;
+            visibility: hidden;
+        }
+        .modal-base.modal-visible {
+            transition: opacity 0.3s ease-out;
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal-content {
+            background-color: #1f2937; /* bg-gray-800 */
+            color: #d1d5db; /* text-gray-300 */
+            transform: scale(0.95) translateY(10px);
+            opacity: 0;
+            transition: all 0.3s ease-out;
+        }
+        .modal-base.modal-visible .modal-content {
+            transform: scale(1) translateY(0);
+            opacity: 1;
+        }
+
+        /* Scroll-in animation */
+        .scroll-fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+        }
+        .scroll-fade-in.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* --- Featured Dishes Slider (Dark Mode) --- */
+        .slider-container {
+            position: relative;
+            overflow: hidden;
+            border-radius: 0.5rem; /* rounded-lg */
+        }
+        .slider-track {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+        }
+        .slider-slide {
+            flex: 0 0 100%;
+            width: 100%;
+        }
+        @media (min-width: 768px) { /* md: */
+            .slider-slide {
+                flex: 0 0 33.333333%; /* 3 slides */
+            }
+        }
+        .slider-button {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: rgba(31, 41, 55, 0.8); /* bg-gray-800 with opacity */
+            border: 1px solid #4b5567; /* border-gray-600 */
+            border-radius: 9999px; /* rounded-full */
+            width: 2.5rem; /* w-10 */
+            height: 2.5rem; /* h-10 */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s ease;
+        }
+        .slider-button:hover {
+            background-color: rgba(55, 65, 81, 1); /* bg-gray-700 */
+        }
+        .slider-button.prev {
+            left: 0.5rem; /* left-2 */
+        }
+        .slider-button.next {
+            right: 0.5rem; /* right-2 */
+        }
+        .slider-button svg {
+            color: #d1d5db; /* text-gray-300 */
+        }
+
+        /* --- NEW: Menu Category Rolling Marquee --- */
+        @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); } /* Translate by half the width */
+        }
+        .menu-category-slider-container {
+            width: 100%;
+            overflow: hidden;
+            position: relative;
+            /* Add fade-out mask at the edges */
+            -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+            mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+        }
+        .menu-category-slider {
+            display: flex;
+            width: max-content; /* Make the container wide enough */
+            /* Apply animation */
+            animation: marquee 40s linear infinite;
+        }
+        /* Pause animation on hover */
+        .menu-category-slider-container:hover .menu-category-slider {
+            animation-play-state: paused;
+        }
+        .menu-card {
+            flex: 0 0 auto; /* Let items size based on content */
+            width: 300px; /* Give a fixed width to each card */
+            margin-right: 1.5rem; /* gap-6 */
+        }
+        /* /--- End Marquee Styles --- */
+
+
+        /* --- NEW Hero Slider --- */
+        .hero-slider-container {
+            position: relative;
+            width: 100%;
+            height: 65vh; /* 65% of viewport height */
+            overflow: hidden;
+            border-radius: 0.5rem; /* rounded-lg */
+            background-color: #1f2937; /* bg-gray-800 */
+        }
+        .hero-slider-track {
+            display: flex;
+            height: 100%;
+            transition: transform 0.7s cubic-bezier(0.68, -0.55, 0.27, 1.55); /* Smooth, bouncy transition */
+        }
+        .hero-slider-slide {
+            flex: 0 0 100%;
+            width: 100%;
+            height: 100%;
+            position: relative;
+            background-size: cover;
+            background-position: center;
+        }
+        /* Add a subtle dark gradient to ensure text is readable */
+        .hero-slider-slide::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(0deg, rgba(17, 24, 39, 0.7) 0%, rgba(17, 24, 39, 0.4) 50%, rgba(17, 24, 39, 0.2) 100%);
+        }
+        .hero-slide-content {
+            position: absolute;
+            bottom: 10%;
+            left: 5%;
+            z-index: 10;
+            color: white;
+            padding: 1rem;
+            max-width: 60%;
+        }
+        .hero-slide-content h1 {
+            font-size: 2.25rem; /* text-4xl */
+            font-weight: 700;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+            /* Animation for text */
+            transform: translateY(20px);
+            opacity: 0;
+            transition: all 0.6s ease-out 0.3s;
+        }
+        .hero-slide-content p {
+            font-size: 1.125rem; /* text-lg */
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+            margin-top: 0.5rem;
+            /* Animation for text */
+            transform: translateY(20px);
+            opacity: 0;
+            transition: all 0.6s ease-out 0.5s;
+        }
+        /* Active slide text animation */
+        .hero-slider-slide.is-active .hero-slide-content h1,
+        .hero-slider-slide.is-active .hero-slide-content p {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        .hero-slider-dots {
+            position: absolute;
+            bottom: 1rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 0.5rem;
+            z-index: 10;
+        }
+        .hero-slider-dot {
+            width: 0.75rem; /* w-3 */
+            height: 0.75rem; /* h-3 */
+            border-radius: 9999px; /* rounded-full */
+            background-color: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .hero-slider-dot.is-active {
+            background-color: white;
+            width: 2rem; /* w-8 */
+        }
+        
+
+        /* --- Gemini AI Features (Dark Mode) --- */
+        #gemini-loading {
+            display: none;
+            border: 4px solid #4b5567; /* border-gray-600 */
+            border-top: 4px solid #ef4444; /* Red */
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+            margin: 1rem auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        #gemini-suggestions {
+            display: none;
+            background-color: #374151; /* bg-gray-700 */
+            border: 1px solid #4b5567; /* border-gray-600 */
+            border-radius: 0.5rem; /* rounded-lg */
+            padding: 1rem; /* p-4 */
+            margin-top: 1rem; /* mt-4 */
+        }
+        #gemini-suggestions h5 {
+            font-weight: 600; /* font-semibold */
+            color: #f9fafb; /* text-gray-50 */
+            font-family: 'Playfair Display', serif;
+        }
+        #gemini-suggestions p {
+            font-size: 0.875rem; /* text-sm */
+            color: #d1d5db; /* text-gray-300 */
+            white-space: pre-wrap; /* To respect newlines from the LLM */
+        }
+
+    </style>
+</head>
+<body class="bg-gray-900 antialiased">
+
+    <!-- Header / Navigation Bar (Dark Mode) -->
+    <header class="bg-gray-800 shadow-lg sticky top-0 z-50">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+            <a href="#" class="text-3xl font-bold font-display text-red-600" id="home-link-logo">Aligarh Bites</a>
+            
+            <!-- Mobile Menu Button -->
+            <div class="md:hidden">
+                <button id="mobile-menu-button" class="text-gray-300 focus:outline-none">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                </button>
+            </div>
+
+            <!-- Desktop Menu (Dark Mode) -->
+            <div class="hidden md:flex items-center space-x-6">
+                <a href="#" class="text-gray-300 hover:text-red-500 transition duration-300 nav-link" data-page="home">Home</a>
+                <a href="#" class="text-gray-300 hover:text-red-500 transition duration-300 nav-link" data-page="menu">Menu</a>
+                <a href="#" class="text-gray-300 hover:text-red-500 transition duration-300 nav-link" data-page="orders">My Orders</a>
+                <button id="login-nav-button" class="text-gray-300 hover:text-red-500 transition duration-300">Login</button>
+                <button id="cart-button" class="relative text-gray-300 hover:text-red-500 transition duration-300">
+                    <!-- Cart Icon SVG -->
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                    <span id="cart-count" class="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">0</span>
+                </button>
+            </div>
+        </nav>
+        
+        <!-- Mobile Menu (Dark Mode) -->
+        <div id="mobile-menu" class="md:hidden bg-gray-800 border-t border-gray-700 max-h-0 overflow-hidden transition-all duration-300 ease-in-out">
+            <a href="#" class="block px-4 py-3 text-gray-300 hover:bg-gray-700 nav-link" data-page="home">Home</a>
+            <a href="#" class="block px-4 py-3 text-gray-300 hover:bg-gray-700 nav-link" data-page="menu">Menu</a>
+            <a href="#" class="block px-4 py-3 text-gray-300 hover:bg-gray-700 nav-link" data-page="orders">My Orders</a>
+            <button id="login-nav-button-mobile" class="block w-full text-left px-4 py-3 text-gray-300 hover:bg-gray-700">Login</button>
+            <button id="cart-button-mobile" class="relative block w-full text-left px-4 py-3 text-gray-300 hover:bg-gray-700">
+                Cart (<span id="cart-count-mobile">0</span>)
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="container mx-auto p-4 sm:p-6 lg:p-8">
+
+        <!-- Page: Home -->
+        <section id="page-home" class="page-content">
+            
+            <!-- NEW Hero Slider Section -->
+            <div class="hero-slider-container shadow-xl">
+                <div class="hero-slider-track" id="hero-slider-track">
+                    <!-- Slide 1 -->
+                    <div class="hero-slider-slide" style="background-image: url('https://placehold.co/1600x900/8B4513/FFFFFF?text=Welcome+to+Aligarh+Bites');">
+                        <div class="hero-slide-content">
+                            <h1 class="font-display">Welcome to Aligarh Bites</h1>
+                            <p>Experience the rich heritage and authentic flavors of Aligarh.</p>
+                        </div>
+                    </div>
+                    <!-- Slide 2 -->
+                    <div class="hero-slider-slide" style="background-image: url('https://placehold.co/1600x900/a65824/FFFFFF?text=Authentic+Mughlai+Biryani');">
+                        <div class="hero-slide-content">
+                            <h1 class="font-display">Authentic Mughlai Biryani</h1>
+                            <p>Our signature dish, cooked to perfection with age-old recipes.</p>
+                        </div>
+                    </div>
+                    <!-- Slide 3 -->
+                    <div class="hero-slider-slide" style="background-image: url('https://placehold.co/1600x900/7a3b1f/FFFFFF?text=Royal+Kebabs+&+Curries');">
+                        <div class="hero-slide-content">
+                            <h1 class="font-display">Royal Kebabs & Curries</h1>
+                            <p>Melt-in-your-mouth kebabs and rich, flavorful curries.</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Slider Dots -->
+                <div class="hero-slider-dots" id="hero-slider-dots">
+                    <!-- Dots will be injected by JS -->
+                </div>
+            </div>
+
+            <!-- Featured Dishes Slider (Dark Mode) -->
+            <div class="mt-12">
+                <h2 class="text-3xl font-bold text-center text-white mb-8 font-display">Our Signature Dishes</h2>
+                <div class="slider-container">
+                    <div class="slider-track" id="home-slider-track">
+                        <!-- Slide 1 -->
+                        <div class="slider-slide p-2">
+                            <div class="bg-gray-800 rounded-lg shadow-lg overflow-hidden transition-all duration-300 ease-in-out hover:shadow-xl hover:shadow-red-800/20">
+                                <img src="https://placehold.co/400x300/F3E5F5/333?text=Aligarhi+Biryani" alt="Aligarhi Biryani" class="w-full h-48 object-cover">
+                                <div class="p-4">
+                                    <h3 class="text-xl font-bold text-gray-100">Aligarhi Biryani</h3>
+                                    <p class="text-gray-400 mt-2">A fragrant and flavorful rice dish with tender meat and a unique blend of spices.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Slide 2 -->
+                        <div class="slider-slide p-2">
+                            <div class="bg-gray-800 rounded-lg shadow-lg overflow-hidden transition-all duration-300 ease-in-out hover:shadow-xl hover:shadow-red-800/20">
+                                <img src="https://placehold.co/400x300/FFE0B2/333?text=Galouti+Kebab" alt="Galouti Kebab" class="w-full h-48 object-cover">
+                                <div class="p-4">
+                                    <h3 class="text-xl font-bold text-gray-100">Galouti Kebab</h3>
+                                    <p class="text-gray-400 mt-2">Melt-in-your-mouth kebabs made from finely minced meat and exotic spices.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Slide 3 -->
+                        <div class="slider-slide p-2">
+                            <div class="bg-gray-800 rounded-lg shadow-lg overflow-hidden transition-all duration-300 ease-in-out hover:shadow-xl hover:shadow-red-800/20">
+                                <img src="https://placehold.co/400x300/FFECB3/333?text=Shahi+Tukda" alt="Shahi Tukda" class="w-full h-48 object-cover">
+                                <div class="p-4">
+                                    <h3 class="text-xl font-bold text-gray-100">Shahi Tukda</h3>
+                                    <p class="text-gray-400 mt-2">A rich and decadent dessert made of fried bread soaked in milk, rabri, and nuts.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Slide 4 (Clone of 1 for looping) -->
+                        <div class="slider-slide p-2">
+                            <div class="bg-gray-800 rounded-lg shadow-lg overflow-hidden transition-all duration-300 ease-in-out hover:shadow-xl hover:shadow-red-800/20">
+                                <img src="https://placehold.co/400x300/F3E5F5/333?text=Aligarhi+Biryani" alt="Aligarhi Biryani" class="w-full h-48 object-cover">
+                                <div class="p-4">
+                                    <h3 class="text-xl font-bold text-gray-100">Aligarhi Biryani</h3>
+                                    <p class="text-gray-400 mt-2">A fragrant and flavorful rice dish with tender meat and a unique blend of spices.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Slider Buttons -->
+                    <button id="slider-prev" class="slider-button prev">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                    </button>
+                    <button id="slider-next" class="slider-button next">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- About Us (Dark Mode) -->
+            <div class="mt-16 bg-gray-800 rounded-lg shadow-xl overflow-hidden p-8 md:p-12 scroll-fade-in">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                    <div>
+                        <h2 class="text-3xl font-bold text-white mb-4 font-display">Our Story</h2>
+                        <p class="text-gray-400 mb-4">
+                            Born from a passion for authentic Mughlai cuisine, Aligarh Bites brings the royal flavors of Aligarh's legendary kitchens to your plate. Our founder, inspired by generations of family recipes, set out to create a space where tradition meets comfort.
+                        </p>
+                        <p class="text-gray-400">
+                            We use only the freshest ingredients and time-honored techniques to craft our dishes. From the slow-cooked korma to the fragrant biryani, every bite is a journey to the heart of Aligarh.
+                        </p>
+                    </div>
+                    <div>
+                        <img src="https://placehold.co/600x400/D1C4E9/333?text=Inside+Our+Kitchen" alt="Our Restaurant Kitchen" class="rounded-lg shadow-md w-full h-auto object-cover">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Page: Menu (Dark Mode) -->
+        <section id="page-menu" class="page-content hidden">
+            <h1 class="text-4xl font-bold text-center text-white mb-10 font-display">Our Full Menu</h1>
+            
+            <!-- Category: Kebabs & Starters -->
+            <div class="mb-12">
+                <h2 class="text-3xl font-bold text-white mb-6 font-display">Kebabs & Starters</h2>
+                <div class="menu-category-slider-container">
+                    <div id="menu-starters" class="menu-category-slider">
+                        <!-- Starter items will be injected here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Category: Main Courses -->
+            <div class="mb-12">
+                <h2 class="text-3xl font-bold text-white mb-6 font-display">Main Courses</h2>
+                <div class="menu-category-slider-container">
+                    <div id="menu-mains" class="menu-category-slider">
+                        <!-- Main course items will be injected here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Category: Breads & Desserts -->
+            <div class="mb-12">
+                <h2 class="text-3xl font-bold text-white mb-6 font-display">Breads & Desserts</h2>
+                <div class="menu-category-slider-container">
+                    <div id="menu-breads-desserts" class="menu-category-slider">
+                        <!-- Bread/Dessert items will be injected here -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Page: Orders (Dark Mode) -->
+        <section id="page-orders" class="page-content hidden">
+            <h1 class="text-4xl font-bold text-center text-white mb-10 font-display">Your Orders</h1>
+            <div id="orders-content" class="bg-gray-800 rounded-lg shadow-xl p-8 max-w-2xl mx-auto text-center">
+                <!-- Content changes based on login state -->
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer (Already Dark) -->
+    <footer class="bg-gray-800 text-gray-400 mt-12 py-8 border-t border-gray-700">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <p>&copy; 2025 Aligarh Bites. All rights reserved.</p>
+            <p class="mt-2">Crafted with ❤️ for the flavors of Aligarh.</p>
+        </div>
+    </footer>
+
+    <!-- Modal: Login (Dark Mode) -->
+    <div id="login-modal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4 modal-base">
+        <div class="bg-gray-800 p-8 rounded-lg shadow-2xl max-w-sm w-full modal-content">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-white font-display">Login</h2>
+                <button class="close-modal text-gray-400 hover:text-white text-3xl">&times;</button>
+            </div>
+            <form id="login-form">
+                <div class="mb-4">
+                    <label for="email" class="block text-gray-300 mb-2">Email Address</label>
+                    <input type="email" id="email" class="w-full px-4 py-2 border rounded-lg bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500" placeholder="you@example.com" required>
+                </div>
+                <div class="mb-6">
+                    <label for="password" class="block text-gray-300 mb-2">Password</label>
+                    <input type="password" id="password" class="w-full px-4 py-2 border rounded-lg bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="w-full bg-red-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-red-700 transition duration-300">Login</button>
+                <p class="text-sm text-gray-400 mt-4 text-center">
+                    Don't have an account? <a href="#" class="text-red-500 hover:underline">Sign up</a>
+                </p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal: Cart (Dark Mode) -->
+    <div id="cart-modal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4 modal-base">
+        <div class="bg-gray-800 rounded-lg shadow-2xl max-w-lg w-full modal-content">
+            <div class="flex justify-between items-center mb-6 p-6 border-b border-gray-700">
+                <h2 class="text-2xl font-bold text-white font-display">Your Cart</h2>
+                <button class="close-modal text-gray-400 hover:text-white text-3xl">&times;</button>
+            </div>
+            
+            <div id="cart-items-container" class="p-6 max-h-64 overflow-y-auto no-scrollbar">
+                <!-- Cart items will be injected here -->
+                <p id="cart-empty-msg" class="text-gray-400 text-center">Your cart is empty.</p>
+            </div>
+
+            <div class="p-6 bg-gray-700 rounded-b-lg">
+                
+                <!-- Gemini Feature Section (Dark Mode) -->
+                <div class="mb-4">
+                    <button id="gemini-suggest-btn" class="w-full bg-gradient-to-r from-red-600 to-rose-600 text-white px-4 py-2 rounded-lg font-semibold hover:from-red-700 hover:to-rose-700 transition duration-300 flex items-center justify-center gap-2 disabled:opacity-50" disabled>
+                        <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 2.5a.75.75 0 01.75.75v3.66l1.95-2.1a.75.75 0 111.1 1.02l-3.25 3.5a.75.75 0 01-1.1 0L6.2 5.83a.75.75 0 111.1-1.02l1.95 2.1V3.25A.75.75 0 0110 2.5zM3.5 10a.75.75 0 01.75-.75h3.66l-2.1-1.95a.75.75 0 111.02-1.1l3.5 3.25a.75.75 0 010 1.1l-3.5 3.25a.75.75 0 11-1.02-1.1l2.1-1.95H4.25A.75.75 0 013.5 10zM16.5 10a.75.75 0 01-.75.75h-3.66l2.1 1.95a.75.75 0 11-1.02 1.1l-3.5-3.25a.75.75 0 010-1.1l3.5-3.25a.75.75 0 111.02 1.1l-2.1 1.95h3.66A.75.75 0 0116.5 10zM10 17.5a.75.75 0 01-.75-.75v-3.66l-1.95 2.1a.75.75 0 11-1.1-1.02l3.25-3.5a.75.75 0 011.1 0l3.25 3.5a.75.75 0 11-1.1 1.02l-1.95-2.1v3.66A.75.75 0 0110 17.5z" clip-rule="evenodd" /></svg>
+                        ✨ Get Pairing Suggestions
+                    </button>
+                    <div id="gemini-loading"></div>
+                    <div id="gemini-suggestions">
+                        <!-- AI suggestions will be injected here -->
+                    </div>
+                </div>
+                <!-- End Gemini Feature Section -->
+
+                <div class="space-y-2 mb-4">
+                    <div class="flex justify-between text-gray-300">
+                        <span>Subtotal</span>
+                        <span id="cart-subtotal">₹0.00</span>
+                    </div>
+                    <div class="flex justify-between text-gray-300">
+                        <span>Taxes (5%)</span>
+                        <span id="cart-tax">₹0.00</span>
+                    </div>
+                    <div class="flex justify-between font-bold text-xl text-gray-100">
+                        <span>Total</span>
+                        <span id="cart-total">₹0.00</span>
+                    </div>
+                </div>
+                <button id="checkout-button" class="w-full bg-red-600 text-white px-4 py-3 rounded-lg font-semibold hover:bg-red-700 transition duration-300 disabled:bg-gray-400">
+                    Proceed to Checkout
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Logic -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            // --- STATE ---
+            let isLoggedIn = false;
+            let cart = {}; // Example: { 'item1': { name: 'Aligarhi Biryani', price: 350, quantity: 1 } }
+            
+            // --- NEW: Added more items ---
+            const menuItems = [
+                { id: 'item1', name: 'Aligarhi Biryani', price: 350, desc: 'Fragrant basmati rice with tender mutton and a unique blend of spices.', image: 'https://placehold.co/400x300/F3E5F5/333?text=Aligarhi+Biryani', category: 'main' },
+                { id: 'item2', name: 'Mughlai Chicken Korma', price: 320, desc: 'A rich, creamy curry made with chicken, yogurt, and aromatic spices.', image: 'https://placehold.co/400x300/DCEDC8/333?text=Chicken+Korma', category: 'main' },
+                { id: 'item3', name: 'Galouti Kebab', price: 280, desc: 'Melt-in-your-mouth minced mutton kebabs, a royal delicacy.', image: 'https://placehold.co/400x300/FFE0B2/333?text=Galouti+Kebab', category: 'starter' },
+                { id: 'item4', name: 'Paneer Butter Masala', price: 290, desc: 'Soft paneer cubes in a creamy tomato-based gravy, a vegetarian delight.', image: 'https://placehold.co/400x300/FFCDD2/333?text=Paneer+Butter+Masala', category: 'main' },
+                { id: 'item5', name: 'Sheermal', price: 60, desc: 'A traditional, saffron-flavored flatbread that\'s mildly sweet.', image: 'https://placehold.co/400x300/F8BBD0/333?text=Sheermal', category: 'bread_dessert' },
+                { id: 'item6', name: 'Shahi Tukda', price: 150, desc: 'Rich, fried bread slices soaked in rabri and topped with nuts.', image: 'https://placehold.co/400x300/FFECB3/333?text=Shahi+Tukda', category: 'bread_dessert' },
+                { id: 'item7', name: 'Seekh Kebab', price: 260, desc: 'Spiced minced meat grilled on skewers in a tandoor.', image: 'https://placehold.co/400x300/FFCCBC/333?text=Seekh+Kebab', category: 'starter' },
+                { id: 'item8', name: 'Nihari', price: 380, desc: 'Slow-cooked stew of tender beef or lamb, a breakfast specialty.', image: 'https://placehold.co/400x300/D7CCC8/333?text=Nihari', category: 'main' },
+                { id: 'item9', name: 'Phirni', price: 120, desc: 'A classic creamy pudding made with ground rice, milk, and saffron.', image: 'https://placehold.co/400x300/E1BEE7/333?text=Phirni', category: 'bread_dessert' },
+                { id: 'item10', name: 'Tandoori Chicken', price: 290, desc: 'Chicken marinated in yogurt and spices, roasted in a clay tandoor.', image: 'https://placehold.co/400x300/FFAB91/333?text=Tandoori+Chicken', category: 'starter' },
+                { id: 'item11', name: 'Dal Makhani', price: 250, desc: 'Creamy and rich slow-cooked black lentils with butter and spices.', image: 'https://placehold.co/400x300/BCAAA4/333?text=Dal+Makhani', category: 'main' },
+                { id: 'item12', name: 'Garlic Naan', price: 50, desc: 'Soft, fluffy flatbread topped with garlic and butter.', image: 'https://placehold.co/400x300/FFF9C4/333?text=Garlic+Naan', category: 'bread_dessert' },
+                { id: 'item13', name: 'Paneer Tikka', price: 270, desc: 'Marinated paneer cubes grilled to perfection.', image: 'https://placehold.co/400x300/FFCC80/333?text=Paneer+Tikka', category: 'starter' },
+                { id: 'item14', name: 'Mutton Rogan Josh', price: 390, desc: 'Aromatic lamb curry with a rich, spicy red gravy.', image: 'https://placehold.co/400x300/FF8A65/333?text=Rogan+Josh', category: 'main' },
+                { id: 'item15', name: 'Gulab Jamun', price: 100, desc: 'Two pieces of soft, deep-fried milk solids soaked in sugar syrup.', image: 'https://placehold.co/400x300/BCAAA4/333?text=Gulab+Jamun', category: 'bread_dessert' }
+            ];
+
+            // --- SELECTORS ---
+            const pages = document.querySelectorAll('.page-content');
+            const navLinks = document.querySelectorAll('.nav-link');
+            const homeLogoLink = document.getElementById('home-link-logo');
+            
+            // Modals
+            const loginModal = document.getElementById('login-modal');
+            const cartModal = document.getElementById('cart-modal');
+            const loginNavButtons = [document.getElementById('login-nav-button'), document.getElementById('login-nav-button-mobile')];
+            const cartButtons = [document.getElementById('cart-button'), document.getElementById('cart-button-mobile')];
+            const closeModals = document.querySelectorAll('.close-modal');
+            
+            // Login Form
+            const loginForm = document.getElementById('login-form');
+            const ordersContent = document.getElementById('orders-content');
+            
+            // Menu
+            const menuStartersContainer = document.getElementById('menu-starters');
+            const menuMainsContainer = document.getElementById('menu-mains');
+            const menuBreadsDessertsContainer = document.getElementById('menu-breads-desserts');
+            
+            // Cart
+            const cartCountSpans = [document.getElementById('cart-count'), document.getElementById('cart-count-mobile')];
+            const cartItemsContainer = document.getElementById('cart-items-container');
+            const cartEmptyMsg = document.getElementById('cart-empty-msg');
+            const cartSubtotalSpan = document.getElementById('cart-subtotal');
+            const cartTaxSpan = document.getElementById('cart-tax');
+            const cartTotalSpan = document.getElementById('cart-total');
+            const checkoutButton = document.getElementById('checkout-button');
+
+            // Mobile Menu
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+
+            // Featured Dishes Slider
+            const featuredSliderTrack = document.getElementById('home-slider-track');
+            const prevButton = document.getElementById('slider-prev');
+            const nextButton = document.getElementById('slider-next');
+            let featuredSlideIndex = 0;
+            const totalFeaturedSlides = 3; // 3 unique slides
+            let autoSlideTimer;
+
+            // NEW Hero Slider
+            const heroSliderTrack = document.getElementById('hero-slider-track');
+            const heroSliderDotsContainer = document.getElementById('hero-slider-dots');
+            const totalHeroSlides = heroSliderTrack.children.length;
+            let heroSlideIndex = 0;
+            let heroAutoSlideTimer;
+            let heroDots = [];
+
+            // ✨ Gemini Selectors
+            const geminiSuggestBtn = document.getElementById('gemini-suggest-btn');
+            const geminiLoading = document.getElementById('gemini-loading');
+            const geminiSuggestions = document.getElementById('gemini-suggestions');
+
+            // --- FUNCTIONS ---
+            // Intersection Observer for scroll animations
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-visible');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            function observeElements(selector) {
+                document.querySelectorAll(selector).forEach(el => {
+                    observer.observe(el);
+                });
+            }
+
+            // Page Navigation
+            function showPage(pageId) {
+                pages.forEach(page => {
+                    page.classList.add('hidden');
+                    page.classList.remove('animate-fade-in');
+                });
+                const targetPage = document.getElementById(`page-${pageId}`);
+                targetPage.classList.remove('hidden');
+                
+                // Force reflow to re-trigger animation
+                void targetPage.offsetWidth; 
+                
+                targetPage.classList.add('animate-fade-in');
+
+                // Update active nav link
+                navLinks.forEach(link => {
+                    if (link.dataset.page === pageId) {
+                        link.classList.add('font-bold', 'text-red-500');
+                    } else {
+                        link.classList.remove('font-bold', 'text-red-500');
+                    }
+                });
+                // Close mobile menu on navigation
+                mobileMenu.classList.add('max-h-0');
+                mobileMenu.classList.remove('max-h-[300px]');
+            }
+
+            // Modal Controls
+            function showLoginModal() {
+                loginModal.classList.add('modal-visible');
+            }
+            
+            function showCartModal() {
+                updateCartView();
+                cartModal.classList.add('modal-visible');
+            }
+
+            function hideModals() {
+                loginModal.classList.remove('modal-visible');
+                cartModal.classList.remove('modal-visible');
+            }
+
+            // Login Logic
+            function handleLogin(e) {
+                e.preventDefault();
+                isLoggedIn = true;
+                const email = document.getElementById('email').value;
+                const username = email.split('@')[0];
+                loginNavButtons.forEach(btn => btn.textContent = `Hi, ${username}`);
+                hideModals();
+                loginForm.reset();
+                updateOrdersPage();
+            }
+
+            // Update Orders Page
+            function updateOrdersPage() {
+                if (isLoggedIn) {
+                    ordersContent.innerHTML = `
+                        <p class="text-lg text-gray-300 mb-4">Welcome back!</p>
+                        <p class="text-gray-400">You have no recent orders. Why not check out our <a href="#" class="text-red-500 hover:underline nav-link" data-page="menu">menu</a>?</p>
+                    `;
+                    // Re-attach event listener to the new "menu" link
+                    ordersContent.querySelector('.nav-link[data-page="menu"]').addEventListener('click', (e) => {
+                        e.preventDefault();
+                        showPage('menu');
+                    });
+                } else {
+                    ordersContent.innerHTML = `
+                        <p class="text-lg text-gray-300 mb-4">Please log in to see your order history.</p>
+                        <button id="orders-login-button" class="bg-red-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-red-700 transition duration-300">Login</button>
+                    `;
+                    document.getElementById('orders-login-button').addEventListener('click', showLoginModal);
+                }
+            }
+            
+            // Render Menu (Dark Mode)
+            function renderMenu() {
+                // Clear containers
+                menuStartersContainer.innerHTML = '';
+                menuMainsContainer.innerHTML = '';
+                menuBreadsDessertsContainer.innerHTML = '';
+
+                // --- NEW: Function to generate and duplicate items for marquee ---
+                const createMarqueeContent = (container, category) => {
+                    const categoryItems = menuItems.filter(item => item.category === category);
+                    let itemsHTML = '';
+
+                    categoryItems.forEach((item, index) => {
+                        itemsHTML += `
+                            <div class="bg-gray-800 rounded-lg shadow-lg overflow-hidden flex flex-col transition-all duration-300 ease-in-out hover:scale-[1.03] hover:shadow-xl hover:shadow-red-800/20 menu-card">
+                                <img src="${item.image}" alt="${item.name}" class="w-full h-48 object-cover">
+                                <div class="p-4 flex flex-col flex-grow">
+                                    <h3 class="text-xl font-bold text-gray-100">${item.name}</h3>
+                                    <p class="text-gray-400 mt-2 flex-grow">${item.desc}</p>
+                                    <div class="flex justify-between items-center mt-4">
+                                        <span class="text-lg font-bold text-gray-100">₹${item.price.toFixed(2)}</span>
+                                        <button data-id="${item.id}" data-name="${item.name}" data-price="${item.price}" class="add-to-cart-btn bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-red-700 transition duration-300">
+                                            Add to Cart
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    });
+
+                    // Duplicate the items for a seamless loop
+                    container.innerHTML = itemsHTML + itemsHTML;
+                };
+
+                // Populate containers
+                createMarqueeContent(menuStartersContainer, 'starter');
+                createMarqueeContent(menuMainsContainer, 'main');
+                createMarqueeContent(menuBreadsDessertsContainer, 'bread_dessert');
+
+
+                // Add event listeners to new buttons
+                document.querySelectorAll('.add-to-cart-btn').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const { id, name, price } = e.target.dataset;
+                        addToCart(id, name, parseFloat(price));
+                    });
+                });
+                
+                // Observe new menu items (though scroll-fade-in is no longer used, this is good practice)
+                observeElements('#page-menu .menu-card');
+            }
+
+            // Cart Logic
+            function addToCart(id, name, price) {
+                if (cart[id]) {
+                    cart[id].quantity++;
+                } else {
+                    cart[id] = { name, price, quantity: 1 };
+                }
+                updateCartView();
+            }
+
+            function removeFromCart(id) {
+                if (cart[id]) {
+                    delete cart[id];
+                }
+                updateCartView();
+            }
+            
+            function updateCartQuantity(id, newQuantity) {
+                if (cart[id]) {
+                    cart[id].quantity = newQuantity;
+                    if (cart[id].quantity <= 0) {
+                        removeFromCart(id);
+                    } else {
+                        updateCartView();
+                    }
+                }
+            }
+
+            // Update Cart View (Dark Mode)
+            function updateCartView() {
+                let totalQuantity = 0;
+                let subtotal = 0;
+                
+                if (Object.keys(cart).length === 0) {
+                    cartItemsContainer.innerHTML = '';
+                    cartEmptyMsg.classList.remove('hidden');
+                } else {
+                    cartEmptyMsg.classList.add('hidden');
+                    cartItemsContainer.innerHTML = '';
+                    for (const id in cart) {
+                        const item = cart[id];
+                        totalQuantity += item.quantity;
+                        subtotal += item.price * item.quantity;
+                        const cartItemHTML = `
+                            <div class="flex items-center justify-between mb-4 pb-4 border-b border-gray-700 last:border-b-0">
+                                <div>
+                                    <h4 class="font-semibold text-gray-100">${item.name}</h4>
+                                    <p class="text-sm text-gray-400">₹${item.price.toFixed(2)}</p>
+                                </div>
+                                <div class="flex items-center">
+                                    <input type="number" value="${item.quantity}" min="1" class="w-16 text-center border rounded-md mx-2 cart-quantity-input bg-gray-600 border-gray-500 text-white" data-id="${id}">
+                                    <button class="remove-from-cart text-red-500 hover:text-red-400 text-2xl" data-id="${id}">&times;</button>
+                                </div>
+                            </div>
+                        `;
+                        cartItemsContainer.innerHTML += cartItemHTML;
+                    }
+                }
+
+                const tax = subtotal * 0.05;
+                const total = subtotal + tax;
+                
+                cartCountSpans.forEach(span => span.textContent = totalQuantity);
+                cartSubtotalSpan.textContent = `₹${subtotal.toFixed(2)}`;
+                cartTaxSpan.textContent = `₹${tax.toFixed(2)}`;
+                cartTotalSpan.textContent = `₹${total.toFixed(2)}`;
+                
+                checkoutButton.disabled = totalQuantity === 0;
+                geminiSuggestBtn.disabled = totalQuantity === 0;
+                // Hide suggestions if cart becomes empty
+                if (totalQuantity === 0) {
+                    geminiSuggestions.style.display = 'none';
+                }
+
+                // Re-attach listeners for dynamic cart items
+                document.querySelectorAll('.remove-from-cart').forEach(btn => {
+                    btn.addEventListener('click', (e) => removeFromCart(e.target.dataset.id));
+                });
+                
+                document.querySelectorAll('.cart-quantity-input').forEach(input => {
+                    input.addEventListener('change', (e) => {
+                        const id = e.target.dataset.id;
+                        const newQuantity = parseInt(e.target.value, 10);
+                        updateCartQuantity(id, newQuantity);
+                    });
+                });
+            }
+
+
+            // Featured Dishes Slider Logic
+            function updateFeaturedSlider() {
+                const slideWidth = featuredSliderTrack.children[0].getBoundingClientRect().width;
+                featuredSliderTrack.style.transition = 'transform 0.5s ease-in-out';
+                featuredSliderTrack.style.transform = `translateX(-${featuredSlideIndex * slideWidth}px)`;
+            }
+
+            function nextFeaturedSlide() {
+                featuredSlideIndex++;
+                updateFeaturedSlider();
+
+                if (featuredSlideIndex === totalFeaturedSlides) {
+                    // We are at the clone. Reset to the start without transition.
+                    setTimeout(() => {
+                        featuredSliderTrack.style.transition = 'none';
+                        featuredSlideIndex = 0;
+                        updateFeaturedSlider();
+                    }, 500); // Wait for the transition to finish
+                }
+            }
+
+            function prevFeaturedSlide() {
+                if (featuredSlideIndex === 0) {
+                    // At the start, jump to the clone at the end
+                    featuredSliderTrack.style.transition = 'none';
+                    featuredSlideIndex = totalFeaturedSlides;
+                    const slideWidth = featuredSliderTrack.children[0].getBoundingClientRect().width;
+                    featuredSliderTrack.style.transform = `translateX(-${featuredSlideIndex * slideWidth}px)`;
+                    
+                    // Force browser to register the change
+                    void featuredSliderTrack.offsetWidth;
+
+                    // Now slide back to the last *real* slide
+                    featuredSlideIndex--;
+                    featuredSliderTrack.style.transition = 'transform 0.5s ease-in-out';
+                    updateFeaturedSlider();
+                } else {
+                    featuredSlideIndex--;
+                    updateFeaturedSlider();
+                }
+            }
+
+            function startFeaturedAutoSlide() {
+                stopFeaturedAutoSlide(); // Clear existing timer
+                autoSlideTimer = setInterval(nextFeaturedSlide, 4000); // Change slide every 4 seconds
+            }
+
+            function stopFeaturedAutoSlide() {
+                clearInterval(autoSlideTimer);
+            }
+
+            // --- NEW Hero Slider Logic ---
+            function setupHeroSlider() {
+                // Create dots
+                for (let i = 0; i < totalHeroSlides; i++) {
+                    const dot = document.createElement('button');
+                    dot.classList.add('hero-slider-dot');
+                    dot.dataset.index = i;
+                    dot.addEventListener('click', () => {
+                        setHeroSlide(i);
+                        stopHeroAutoSlide();
+                        startHeroAutoSlide();
+                    });
+                    heroSliderDotsContainer.appendChild(dot);
+                    heroDots.push(dot);
+                }
+                // Set initial active state
+                setHeroSlide(0);
+            }
+
+            function setHeroSlide(index) {
+                heroSlideIndex = index;
+                heroSliderTrack.style.transform = `translateX(-${heroSlideIndex * 100}%)`;
+                
+                // Update active dot
+                heroDots.forEach((dot, i) => {
+                    dot.classList.toggle('is-active', i === heroSlideIndex);
+                });
+
+                // Update active slide for text animation
+                Array.from(heroSliderTrack.children).forEach((slide, i) => {
+                    slide.classList.toggle('is-active', i === heroSlideIndex);
+                });
+            }
+
+            function nextHeroSlide() {
+                let nextIndex = (heroSlideIndex + 1) % totalHeroSlides;
+                setHeroSlide(nextIndex);
+            }
+
+            function startHeroAutoSlide() {
+                stopHeroAutoSlide();
+                heroAutoSlideTimer = setInterval(nextHeroSlide, 5000); // 5 seconds per slide
+            }
+
+            function stopHeroAutoSlide() {
+                clearInterval(heroAutoSlideTimer);
+            }
+
+            // --- Gemini API Function ---
+            
+            /**
+             * Calls the Gemini API with exponential backoff.
+             * @param {string} prompt The prompt to send to the model.
+             * @param {number} maxRetries Maximum number of retries.
+             * @returns {Promise<string>} The generated text.
+             */
+            async function callGeminiApi(prompt, maxRetries = 3) {
+                const apiKey = ""; // API key is handled by the environment
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+
+                const payload = {
+                    contents: [{ parts: [{ text: prompt }] }],
+                    systemInstruction: {
+                        parts: [{ text: "You are a helpful and concise restaurant assistant for 'Aligarh Bites', an authentic Mughlai Indian restaurant. When asked for pairings, provide a short, friendly response with 2-3 suggestions of common Indian drinks (like lassi, nimbu pani) or side dishes (like raita, naan, salad). Format it as a simple list. Do not use markdown." }]
+                    }
+                };
+
+                let delay = 1000; // Start with 1 second delay
+                for (let i = 0; i < maxRetries; i++) {
+                    try {
+                        const response = await fetch(apiUrl, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(payload)
+                        });
+
+                        if (!response.ok) {
+                            throw new Error(`API Error: ${response.status} ${response.statusText}`);
+                        }
+
+                        const result = await response.json();
+                        const candidate = result.candidates?.[0];
+
+                        if (candidate && candidate.content?.parts?.[0]?.text) {
+                            return candidate.content.parts[0].text;
+                        } else {
+                            throw new Error("Invalid response structure from API.");
+                        }
+
+                    } catch (error) {
+                        if (i === maxRetries - 1) {
+                            // Last retry failed
+                            console.error("Gemini API call failed after retries:", error);
+                            return `Sorry, I'm having trouble thinking of suggestions right now. Please try again in a moment. (Error: ${error.message})`;
+                        }
+                        // Wait for the delay and retry
+                        await new Promise(resolve => setTimeout(resolve, delay));
+                        delay *= 2; // Exponential backoff
+                    }
+                }
+                return "Sorry, I couldn't get suggestions after several attempts.";
+            }
+
+            /**
+             * ✨ Handles the click event for the Gemini suggestions button.
+             */
+            async function handleGeminiSuggest() {
+                // 1. Get items from cart
+                const cartItems = Object.values(cart).map(item => `${item.quantity}x ${item.name}`);
+                if (cartItems.length === 0) {
+                    geminiSuggestions.innerHTML = `<h5>Suggestions</h5><p>Add items to your cart first, and I'll suggest some pairings!</p>`;
+                    geminiSuggestions.style.display = 'block';
+                    return;
+                }
+
+                // 2. Show loading, hide old suggestions
+                geminiLoading.style.display = 'block';
+                geminiSuggestions.style.display = 'none';
+                geminiSuggestBtn.disabled = true;
+
+                // 3. Create prompt
+                const prompt = `I am ordering the following items: ${cartItems.join(', ')}. What 2-3 drinks or side dishes would you recommend to complete this meal?`;
+
+                // 4. Call API
+                const responseText = await callGeminiApi(prompt);
+
+                // 5. Hide loading, show response
+                geminiLoading.style.display = 'none';
+                geminiSuggestions.innerHTML = `<h5>✨ My Suggestions</h5><p>${responseText}</p>`;
+                geminiSuggestions.style.display = 'block';
+                geminiSuggestBtn.disabled = false;
+            }
+
+            // --- EVENT LISTENERS ---
+            
+            // Page Navigation
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const pageId = e.target.dataset.page;
+                    showPage(pageId);
+                });
+            });
+            homeLogoLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                showPage('home');
+            });
+
+            // Mobile Menu Toggle
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('max-h-0');
+                mobileMenu.classList.toggle('max-h-[300px]'); // Adjust max height if menu is taller
+            });
+
+            // Modals
+            loginNavButtons.forEach(btn => btn.addEventListener('click', showLoginModal));
+            cartButtons.forEach(btn => btn.addEventListener('click', showCartModal));
+            closeModals.forEach(btn => btn.addEventListener('click', hideModals));
+            
+            // Login
+            loginForm.addEventListener('submit', handleLogin);
+
+            // Gemini Button
+            geminiSuggestBtn.addEventListener('click', handleGeminiSuggest);
+
+            // Featured Dishes Slider Events
+            nextButton.addEventListener('click', () => {
+                nextFeaturedSlide();
+                stopFeaturedAutoSlide();
+                startFeaturedAutoSlide(); // Reset timer on manual click
+            });
+            prevButton.addEventListener('click', () => {
+                prevFeaturedSlide();
+                stopFeaturedAutoSlide();
+                startFeaturedAutoSlide(); // Reset timer on manual click
+            });
+
+            // Re-calculate slide width on window resize
+            window.addEventListener('resize', () => {
+                updateFeaturedSlider();
+                // No resize needed for hero slider as it's 100% width
+            });
+
+            // --- INITIALIZATION ---
+            showPage('home');
+            updateOrdersPage();
+            renderMenu();
+            updateCartView();
+            startFeaturedAutoSlide(); // Start the featured dishes slider
+            setupHeroSlider(); // Set up the new hero slider
+            startHeroAutoSlide(); // Start the new hero slider
+            
+            // Observe initial elements on home page
+            observeElements('#page-home .scroll-fade-in');
+            
+        });
+    </script>
+</body>
+</html>
